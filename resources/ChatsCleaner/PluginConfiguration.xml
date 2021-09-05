@@ -1,0 +1,9 @@
+<plugin name="Chats Cleaner" author="leosol" type="python">
+  <metadata>
+    <description></description>
+    <executionPath>main.py</executionPath>
+    <type>Test</type>
+    <author>leosol</author>
+  </metadata>
+  <parameters />
+</plugin>
