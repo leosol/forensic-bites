@@ -1,6 +1,11 @@
 # Forensic Scripts
 
 ## Table of Contents
+<details>
+<summary>Cellebrite UFED Physical Analyzer</summary>
+
+* [`Remove Attachments / Clean Chats`](#clean-chats)
+</details>
 
 <details>
 <summary>WhatsApp</summary>
@@ -11,6 +16,21 @@
 
 
 <hr />
+
+## <a name="clean-chats"></a>Remove Attachments / Clean Chats
+
+#### Motivation and Expected Results
+Sometimes, chats can become extremely large and UFED PA offers no easy way to remove attachments in batch. 
+Besides that, there is no way to know in advance the size of the report. 
+In the following picture we show a chats extraction that amounts to 28 GB. In the middle of the image, you can see "ChatsCleaner", a tool that was made in python and that integrates with UFED PA. With ChatsCleaner aims to help the analyzer removing unwanted information in a batch command.
+
+#### Usage
+- Download chats cleaner from [Download Link](https://github.com/leosol/forensic-bites/archive/refs/heads/main.zip)
+- In UFED Physical Analyzer, go to 
+
+``Python -> Run Script -> choose main.py in ChatsCleaner``
+
+![Sample 1](pictures/ChatsCleaner.png) 
 
 ## <a name="removed-messages"></a>Analyze removed messages
 #### Expected results
@@ -61,7 +81,7 @@ group by substr(DT_END,0, 8)
 order by substr(DT_END,0, 8) desc
 ```
 
-#### <a name="find-whatsapp-key"></a>Find Whatsapp Key
+## <a name="find-whatsapp-key"></a>Find Whatsapp Key
 
 About to add some more...
 
