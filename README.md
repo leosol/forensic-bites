@@ -20,15 +20,22 @@
 ## <a name="clean-chats"></a>Remove Attachments / Clean Chats
 
 #### Motivation and Expected Results
-Sometimes, chats can become extremely large and UFED PA offers no easy way to remove attachments in batch. 
-Besides that, there is no way to know in advance the size of the report. 
-In the following picture we show a chats extraction that amounts to 28 GB. In the middle of the image, you can see "ChatsCleaner", a tool that was made in python and that integrates with UFED PA. With ChatsCleaner aims to help the analyzer removing unwanted information in a batch command.
+Sometimes, chats can become extremely large and UFED PA offers no easy way to remove attachments in batch. Besides that, there is no way to know in advance the size of the report.
+
+
+In the following picture we show a chats extraction that amounts to 28 GB. In the middle of the image, you can see "ChatsCleaner", a tool that was made in python and that integrates with UFED PA. 
+
+With ChatsCleaner you can:
+- batch remove all attachments, keeping only text messages.
+- remove only attachments larger than a specific size (settings tab)
+- remove only videos or videos larger than a specific size (settings tab)
+- generate a CSV and a log file describing everything that is out of the report
 
 #### Usage
 - Download chats cleaner from [Download Link](https://github.com/leosol/forensic-bites/archive/refs/heads/main.zip)
 - In UFED Physical Analyzer, go to 
 
-``Python -> Run Script -> choose main.py in ChatsCleaner``
+``Python -> Run Script -> choose main.py in [download/resources/ChatsCleaner]``
 
 ![Sample 1](pictures/ChatsCleaner.png) 
 
