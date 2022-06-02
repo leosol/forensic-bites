@@ -31,18 +31,357 @@ from System.Windows.Forms import (Application, Form, Button, Label, DockStyle, A
                                   MenuStrip, ToolStripMenuItem, Keys)
 
 from modules.Models import (Settings)
-#from modules.Subsystem import (Subsystem)
-from modules.UFEDSubsystem import (Subsystem)
-from modules.Commands import (applySettingsCommand, restoreSettingsCommand, refreshCommand, keepOnlyTextMessagesCommand,
-                              addAllAttachmentsCommand, removeVideosCommand, generateReportCommand, selectAllCheckBoxesCommand)
-
+#from modules.Subsystem import (Subsystem, PathImageSubsystem, PathVideoSubsystem)
+from modules.UFEDSubsystem import (Subsystem, PathImageSubsystem, PathVideoSubsystem)
+from modules.Commands import (applySettingsCommand, restoreSettingsCommand, chatRefreshCommand, chatKeepOnlyTextMessagesCommand,
+                              chatAddAllAttachmentsCommand, chatRemoveVideosCommand, chatGenerateReportCommand, chatSelectAllCheckBoxesCommand,
+                              imagesSelectAllCheckBoxesCommand, pathImageRemoveCommand, pathImageAddCommand, pathImagesRefreshCommand, pathImagePredefinedRemoveCommand, pathImageAddAllCommand,
+                              pathVideoAddAllCommand, pathVideoAddCommand, pathVideoPredefinedRemoveCommand, pathVideoRemoveCommand, videosSelectAllCheckBoxesCommand, pathVideosRefreshCommand)
 
 executablePath = __file__
 if executablePath is None:
     executablePath = Application.ExecutablePath
 executableDirectory = Path.GetDirectoryName(executablePath)
-globalSettings = Settings(executableDirectory, Subsystem())
+globalSettings = Settings(executableDirectory, Subsystem(), PathImageSubsystem(), PathVideoSubsystem())
 globalSettings.subSystem.computeChatList(globalSettings.minChatToBeLarge)
+
+
+class VideosTab(TabPage):
+    def __init__(self):
+        self.Text = 'Videos'
+        self.createContainer()
+        self.createDataGrid()
+        self.createGridControls()
+        self.Controls.Add(self.container)
+    def incCurrentRow(self):
+        self.currentRow = self.currentRow + 1
+    def createContainer(self):
+        container = TableLayoutPanel()
+        container.AutoSize = True
+        container.Margin = Padding(10)
+        container.Padding = Padding(10)
+        container.Name = 'container name'
+        container.ColumnCount = 3
+        container.RowCount = 3
+        container.AutoSizeMode = AutoSizeMode.GrowAndShrink
+        container.GrowStyle = TableLayoutPanelGrowStyle.AddRows
+        container.Dock = DockStyle.Fill
+        container.ColumnStyles.Add(ColumnStyle(SizeType.Percent, 10))
+        container.ColumnStyles.Add(ColumnStyle(SizeType.Percent, 70))
+        container.ColumnStyles.Add(ColumnStyle(SizeType.Percent, 20))
+        self.container = container
+        self.currentRow = 0
+    def createDataGrid(self):
+        dataGridView = DataGridView()
+        self.dataGridView = dataGridView
+        dataGridView.Margin = Padding(10)
+        dataGridView.Padding = Padding(10)
+        dataGridView.Name = "Videos Data Grid View"
+        dataGridView.AllowUserToAddRows = False
+        dataGridView.Height = 480
+        dataGridView.Width = 640
+
+        chatPathColumn = DataGridViewTextBoxColumn()
+        chatPathColumn.Name = "Path"
+        dataGridView.Columns.Add(chatPathColumn)
+
+        referencedCount = DataGridViewTextBoxColumn()
+        referencedCount.Name = "Referenced Count"
+        referencedCount.ValueType = Int64
+        dataGridView.Columns.Add(referencedCount)
+
+        actualSize = DataGridViewTextBoxColumn()
+        actualSize.Name = "Size (MB)"
+        actualSize.ValueType = Int64 #clr.GetClrType(type(123))
+        dataGridView.Columns.Add(actualSize)
+
+        originalSize = DataGridViewTextBoxColumn()
+        originalSize.Name = "Initial Size (MB)"
+        originalSize.ValueType = Int64
+        dataGridView.Columns.Add(originalSize)
+
+        selectItemColumn = DataGridViewCheckBoxColumn()
+        selectItemColumn.Name = "Select"
+        selectItemColumn.ToolTipText = "ToolTipText"
+        dataGridView.Columns.Add(selectItemColumn)
+
+        self.container.Controls.Add(dataGridView)
+        self.container.SetCellPosition(dataGridView, TableLayoutPanelCellPosition(0, self.currentRow))
+        self.container.SetColumnSpan(dataGridView, 2)
+    def createGridControls(self):
+        global globalSettings
+        controlsContainer = FlowLayoutPanel()
+        controlsContainer.FlowDirection = FlowDirection.TopDown
+        controlsContainer.Dock = DockStyle.Fill
+
+        chkBoxSelectAll = CheckBox()
+        self.chkBoxSelectAll = chkBoxSelectAll
+        chkBoxSelectAll.Text = "Select All"
+        videosSelectAllCheckBoxesCommand.setSettings(globalSettings)
+        videosSelectAllCheckBoxesCommand.setFormObject(self)
+        chkBoxSelectAll.Click += videosSelectAllCheckBoxesCommand.execute
+
+        btnRefresh = Button()
+        # btnRemoveAttachments.Text = 'Refresh'
+        btnRefresh.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\refresh-btn.png");
+        btnRefresh.AutoSize = True
+        btnRefresh.Dock = DockStyle.Fill
+        pathVideosRefreshCommand.setFormObject(self)
+        pathVideosRefreshCommand.setSettings(globalSettings)
+        btnRefresh.Click += pathVideosRefreshCommand.execute
+
+
+        btnAddAll = Button()
+        btnAddAll.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\204-add-all.png");
+        btnAddAll.AutoSize = True
+        btnAddAll.Dock = DockStyle.Fill
+        pathVideoAddAllCommand.setFormObject(self)
+        pathVideoAddAllCommand.setSettings(globalSettings)
+        btnAddAll.Click += pathVideoAddAllCommand.execute
+
+        btnAddAllAttachments = Button()
+        btnAddAllAttachments.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\202-add-items-with-selected-paths.png");
+        btnAddAllAttachments.AutoSize = True
+        btnAddAllAttachments.Dock = DockStyle.Fill
+        pathVideoAddCommand.setFormObject(self)
+        pathVideoAddCommand.setSettings(globalSettings)
+        btnAddAllAttachments.Click += pathVideoAddCommand.execute
+
+        btnRemoveVideosAttachments = Button()
+        #btnRemoveVideosAttachments.Text = 'Clear Video Attachments'
+        btnRemoveVideosAttachments.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\201-remove-items-with-path.png");
+        btnRemoveVideosAttachments.AutoSize = True
+        btnRemoveVideosAttachments.Dock = DockStyle.Fill
+        pathVideoRemoveCommand.setFormObject(self)
+        pathVideoRemoveCommand.setSettings(globalSettings)
+        btnRemoveVideosAttachments.Click += pathVideoRemoveCommand.execute
+
+
+        btnPredefinedRemoveVideosAttachments = Button()
+        #btnPredefinedRemoveVideosAttachments.Text = 'Clear Video Attachments'
+        btnPredefinedRemoveVideosAttachments.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\203-remove-items-with-predefined-paths.png");
+        btnPredefinedRemoveVideosAttachments.AutoSize = True
+        btnPredefinedRemoveVideosAttachments.Dock = DockStyle.Fill
+        pathVideoPredefinedRemoveCommand.setFormObject(self)
+        pathVideoPredefinedRemoveCommand.setSettings(globalSettings)
+        btnPredefinedRemoveVideosAttachments.Click += pathVideoPredefinedRemoveCommand.execute
+
+        btnGenReport = Button()
+        #btnGenReport.Text = 'Generate report'
+        btnGenReport.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\report-btn.png");
+        btnGenReport.AutoSize = True
+        btnGenReport.Dock = DockStyle.Fill
+        chatGenerateReportCommand.setFormObject(self)
+        chatGenerateReportCommand.setSettings(globalSettings)
+        btnGenReport.Click += chatGenerateReportCommand.execute
+
+        controlsContainer.Controls.Add(chkBoxSelectAll)
+        controlsContainer.Controls.Add(btnRefresh)
+        controlsContainer.Controls.Add(btnAddAll)
+        controlsContainer.Controls.Add(btnAddAllAttachments)
+        controlsContainer.Controls.Add(btnRemoveVideosAttachments)
+        controlsContainer.Controls.Add(btnPredefinedRemoveVideosAttachments)
+        controlsContainer.Controls.Add(btnGenReport)
+
+        labelSelectedSizeVsTotalSize = Label()
+        labelSelectedSizeVsTotalSize.Margin = Padding(10)
+        labelSelectedSizeVsTotalSize.Text = "Selected / Total "
+        controlsContainer.Controls.Add(labelSelectedSizeVsTotalSize)
+
+        valueSelectedSizeVsTotalSize = Label()
+        valueSelectedSizeVsTotalSize.Text = ""
+        self.valueSelectedSizeVsTotalSize = valueSelectedSizeVsTotalSize
+        controlsContainer.Controls.Add(valueSelectedSizeVsTotalSize)
+
+        self.container.Controls.Add(controlsContainer)
+        self.container.SetCellPosition(controlsContainer, TableLayoutPanelCellPosition(3, self.currentRow))
+        self.incCurrentRow()
+    def updatePathVideoListFromSubsystem(self):
+        global globalSettings
+        pathVideoList = globalSettings.pathVideoSubsystem.pathVideoList
+        self.dataGridView.Rows.Clear()
+        for item in pathVideoList.pathVideoItems:
+            self.dataGridView.Rows.Add(item.ipath, int(item.refCount), int(item.actualSize), int(item.originalSize))
+        selectedSize = globalSettings.pathVideoSubsystem.computeSelectedSize()
+        totalSize = globalSettings.pathVideoSubsystem.computeTotalSize()
+        self.valueSelectedSizeVsTotalSize.Text = str(selectedSize) + " / " + str(totalSize) + " (MB)"
+    def selectAllItemsInGrid(self):
+        for rowItem in self.dataGridView.Rows:
+            rowItem.Cells[4].Value = True
+    def getSelectedItems(self):
+        selectedItems = []
+        for rowItem in self.dataGridView.Rows:
+                if rowItem.Cells[4].Value:
+                    selectedItems.append(rowItem.Cells[0].Value)
+        return selectedItems
+
+class ImagesTab(TabPage):
+    def __init__(self):
+        self.Text = 'Images'
+        self.createContainer()
+        self.createDataGrid()
+        self.createGridControls()
+        self.Controls.Add(self.container)
+    def incCurrentRow(self):
+        self.currentRow = self.currentRow + 1
+    def createContainer(self):
+        container = TableLayoutPanel()
+        container.AutoSize = True
+        container.Margin = Padding(10)
+        container.Padding = Padding(10)
+        container.Name = 'container name'
+        container.ColumnCount = 3
+        container.RowCount = 3
+        container.AutoSizeMode = AutoSizeMode.GrowAndShrink
+        container.GrowStyle = TableLayoutPanelGrowStyle.AddRows
+        container.Dock = DockStyle.Fill
+        container.ColumnStyles.Add(ColumnStyle(SizeType.Percent, 10))
+        container.ColumnStyles.Add(ColumnStyle(SizeType.Percent, 70))
+        container.ColumnStyles.Add(ColumnStyle(SizeType.Percent, 20))
+        self.container = container
+        self.currentRow = 0
+    def createDataGrid(self):
+        dataGridView = DataGridView()
+        self.dataGridView = dataGridView
+        dataGridView.Margin = Padding(10)
+        dataGridView.Padding = Padding(10)
+        dataGridView.Name = "Images Data Grid View"
+        dataGridView.AllowUserToAddRows = False
+        dataGridView.Height = 480
+        dataGridView.Width = 640
+
+        chatPathColumn = DataGridViewTextBoxColumn()
+        chatPathColumn.Name = "Path"
+        dataGridView.Columns.Add(chatPathColumn)
+
+        referencedCount = DataGridViewTextBoxColumn()
+        referencedCount.Name = "Referenced Count"
+        referencedCount.ValueType = Int64
+        dataGridView.Columns.Add(referencedCount)
+
+        actualSize = DataGridViewTextBoxColumn()
+        actualSize.Name = "Size (MB)"
+        actualSize.ValueType = Int64 #clr.GetClrType(type(123))
+        dataGridView.Columns.Add(actualSize)
+
+        originalSize = DataGridViewTextBoxColumn()
+        originalSize.Name = "Initial Size (MB)"
+        originalSize.ValueType = Int64
+        dataGridView.Columns.Add(originalSize)
+
+        selectItemColumn = DataGridViewCheckBoxColumn()
+        selectItemColumn.Name = "Select"
+        selectItemColumn.ToolTipText = "ToolTipText"
+        dataGridView.Columns.Add(selectItemColumn)
+
+        self.container.Controls.Add(dataGridView)
+        self.container.SetCellPosition(dataGridView, TableLayoutPanelCellPosition(0, self.currentRow))
+        self.container.SetColumnSpan(dataGridView, 2)
+    def createGridControls(self):
+        global globalSettings
+        controlsContainer = FlowLayoutPanel()
+        controlsContainer.FlowDirection = FlowDirection.TopDown
+        controlsContainer.Dock = DockStyle.Fill
+
+        chkBoxSelectAll = CheckBox()
+        self.chkBoxSelectAll = chkBoxSelectAll
+        chkBoxSelectAll.Text = "Select All"
+        videosSelectAllCheckBoxesCommand.setSettings(globalSettings)
+        videosSelectAllCheckBoxesCommand.setFormObject(self)
+        chkBoxSelectAll.Click += videosSelectAllCheckBoxesCommand.execute
+
+        btnRefresh = Button()
+        # btnRemoveAttachments.Text = 'Refresh'
+        btnRefresh.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\refresh-btn.png");
+        btnRefresh.AutoSize = True
+        btnRefresh.Dock = DockStyle.Fill
+        pathImagesRefreshCommand.setFormObject(self)
+        pathImagesRefreshCommand.setSettings(globalSettings)
+        btnRefresh.Click += pathImagesRefreshCommand.execute
+
+
+        btnAddAll = Button()
+        btnAddAll.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\204-add-all.png");
+        btnAddAll.AutoSize = True
+        btnAddAll.Dock = DockStyle.Fill
+        pathImageAddAllCommand.setFormObject(self)
+        pathImageAddAllCommand.setSettings(globalSettings)
+        btnAddAll.Click += pathImageAddAllCommand.execute
+
+        btnAddAllAttachments = Button()
+        btnAddAllAttachments.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\202-add-items-with-selected-paths.png");
+        btnAddAllAttachments.AutoSize = True
+        btnAddAllAttachments.Dock = DockStyle.Fill
+        pathImageAddCommand.setFormObject(self)
+        pathImageAddCommand.setSettings(globalSettings)
+        btnAddAllAttachments.Click += pathImageAddCommand.execute
+
+        btnRemoveVideosAttachments = Button()
+        #btnRemoveVideosAttachments.Text = 'Clear Video Attachments'
+        btnRemoveVideosAttachments.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\201-remove-items-with-path.png");
+        btnRemoveVideosAttachments.AutoSize = True
+        btnRemoveVideosAttachments.Dock = DockStyle.Fill
+        pathImageRemoveCommand.setFormObject(self)
+        pathImageRemoveCommand.setSettings(globalSettings)
+        btnRemoveVideosAttachments.Click += pathImageRemoveCommand.execute
+
+
+        btnPredefinedRemove = Button()
+        btnPredefinedRemove.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\203-remove-items-with-predefined-paths.png");
+        btnPredefinedRemove.AutoSize = True
+        btnPredefinedRemove.Dock = DockStyle.Fill
+        pathImagePredefinedRemoveCommand.setFormObject(self)
+        pathImagePredefinedRemoveCommand.setSettings(globalSettings)
+        btnPredefinedRemove.Click += pathImagePredefinedRemoveCommand.execute
+
+        btnGenReport = Button()
+        #btnGenReport.Text = 'Generate report'
+        btnGenReport.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\report-btn.png");
+        btnGenReport.AutoSize = True
+        btnGenReport.Dock = DockStyle.Fill
+        chatGenerateReportCommand.setFormObject(self)
+        chatGenerateReportCommand.setSettings(globalSettings)
+        btnGenReport.Click += chatGenerateReportCommand.execute
+
+        controlsContainer.Controls.Add(chkBoxSelectAll)
+        controlsContainer.Controls.Add(btnRefresh)
+        controlsContainer.Controls.Add(btnAddAll)
+        controlsContainer.Controls.Add(btnAddAllAttachments)
+        controlsContainer.Controls.Add(btnRemoveVideosAttachments)
+        controlsContainer.Controls.Add(btnPredefinedRemove)
+        controlsContainer.Controls.Add(btnGenReport)
+
+        labelSelectedSizeVsTotalSize = Label()
+        labelSelectedSizeVsTotalSize.Margin = Padding(10)
+        labelSelectedSizeVsTotalSize.Text = "Selected / Total "
+        controlsContainer.Controls.Add(labelSelectedSizeVsTotalSize)
+
+        valueSelectedSizeVsTotalSize = Label()
+        valueSelectedSizeVsTotalSize.Text = ""
+        self.valueSelectedSizeVsTotalSize = valueSelectedSizeVsTotalSize
+        controlsContainer.Controls.Add(valueSelectedSizeVsTotalSize)
+
+        self.container.Controls.Add(controlsContainer)
+        self.container.SetCellPosition(controlsContainer, TableLayoutPanelCellPosition(3, self.currentRow))
+        self.incCurrentRow()
+    def updatePathImageListFromSubsystem(self):
+        global globalSettings
+        pathImageList = globalSettings.pathImageSubsystem.pathImageList
+        self.dataGridView.Rows.Clear()
+        for item in pathImageList.pathImageItems:
+            self.dataGridView.Rows.Add(item.ipath, int(item.refCount), int(item.actualSize), int(item.originalSize))
+        selectedSize = globalSettings.pathImageSubsystem.computeSelectedSize()
+        totalSize = globalSettings.pathImageSubsystem.computeTotalSize()
+        self.valueSelectedSizeVsTotalSize.Text = str(selectedSize) + " / " + str(totalSize) + " (MB)"
+    def selectAllItemsInGrid(self):
+        for rowItem in self.dataGridView.Rows:
+            rowItem.Cells[4].Value = True
+    def getSelectedItems(self):
+        selectedItems = []
+        for rowItem in self.dataGridView.Rows:
+                if rowItem.Cells[4].Value:
+                    selectedItems.append(rowItem.Cells[0].Value)
+        return selectedItems
 
 class ChatsTab(TabPage):
     def __init__(self):
@@ -123,53 +462,53 @@ class ChatsTab(TabPage):
         chkBoxSelectAll = CheckBox()
         self.chkBoxSelectAll = chkBoxSelectAll
         chkBoxSelectAll.Text = "Select All"
-        selectAllCheckBoxesCommand.setSettings(globalSettings)
-        selectAllCheckBoxesCommand.setFormObject(self)
-        chkBoxSelectAll.Click += selectAllCheckBoxesCommand.execute
+        chatSelectAllCheckBoxesCommand.setSettings(globalSettings)
+        chatSelectAllCheckBoxesCommand.setFormObject(self)
+        chkBoxSelectAll.Click += chatSelectAllCheckBoxesCommand.execute
 
         btnRefresh = Button()
         # btnRemoveAttachments.Text = 'Refresh'
         btnRefresh.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\refresh-btn.png");
         btnRefresh.AutoSize = True
         btnRefresh.Dock = DockStyle.Fill
-        refreshCommand.setFormObject(self)
-        refreshCommand.setSettings(globalSettings)
-        btnRefresh.Click += refreshCommand.execute
+        chatRefreshCommand.setFormObject(self)
+        chatRefreshCommand.setSettings(globalSettings)
+        btnRefresh.Click += chatRefreshCommand.execute
 
         btnRemoveAttachments = Button()
         #btnRemoveAttachments.Text = 'Clear All Attachments'
         btnRemoveAttachments.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\remove-non-text-btn.png");
         btnRemoveAttachments.AutoSize = True
         btnRemoveAttachments.Dock = DockStyle.Fill
-        keepOnlyTextMessagesCommand.setFormObject(self)
-        keepOnlyTextMessagesCommand.setSettings(globalSettings)
-        btnRemoveAttachments.Click += keepOnlyTextMessagesCommand.execute
+        chatKeepOnlyTextMessagesCommand.setFormObject(self)
+        chatKeepOnlyTextMessagesCommand.setSettings(globalSettings)
+        btnRemoveAttachments.Click += chatKeepOnlyTextMessagesCommand.execute
 
         btnAddAllAttachments = Button()
         btnAddAllAttachments.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\all-attachs-btn.png");
         btnAddAllAttachments.AutoSize = True
         btnAddAllAttachments.Dock = DockStyle.Fill
-        addAllAttachmentsCommand.setFormObject(self)
-        addAllAttachmentsCommand.setSettings(globalSettings)
-        btnAddAllAttachments.Click += addAllAttachmentsCommand.execute
+        chatAddAllAttachmentsCommand.setFormObject(self)
+        chatAddAllAttachmentsCommand.setSettings(globalSettings)
+        btnAddAllAttachments.Click += chatAddAllAttachmentsCommand.execute
 
         btnRemoveVideosAttachments = Button()
         #btnRemoveVideosAttachments.Text = 'Clear Video Attachments'
         btnRemoveVideosAttachments.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\remove-videos-btn.png");
         btnRemoveVideosAttachments.AutoSize = True
         btnRemoveVideosAttachments.Dock = DockStyle.Fill
-        removeVideosCommand.setFormObject(self)
-        removeVideosCommand.setSettings(globalSettings)
-        btnRemoveVideosAttachments.Click += removeVideosCommand.execute
+        chatRemoveVideosCommand.setFormObject(self)
+        chatRemoveVideosCommand.setSettings(globalSettings)
+        btnRemoveVideosAttachments.Click += chatRemoveVideosCommand.execute
 
         btnGenReport = Button()
         #btnGenReport.Text = 'Generate report'
         btnGenReport.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\report-btn.png");
         btnGenReport.AutoSize = True
         btnGenReport.Dock = DockStyle.Fill
-        generateReportCommand.setFormObject(self)
-        generateReportCommand.setSettings(globalSettings)
-        btnGenReport.Click += generateReportCommand.execute
+        chatGenerateReportCommand.setFormObject(self)
+        chatGenerateReportCommand.setSettings(globalSettings)
+        btnGenReport.Click += chatGenerateReportCommand.execute
 
         controlsContainer.Controls.Add(chkBoxSelectAll)
         controlsContainer.Controls.Add(btnRefresh)
@@ -221,6 +560,12 @@ class SettingsTab(TabPage):
         currentRow += 1
         self.createMinChatSettings(container, currentRow)
         currentRow += 1
+        self.createMinDirDepth(container, currentRow)
+        currentRow += 1
+        self.createMaxDirDepth(container, currentRow)
+        currentRow += 1
+        self.createMinDirSize(container, currentRow)
+        currentRow += 1
         self.createVideoMimeTypes(container, currentRow)
         currentRow += 1
         self.createActionButtons(container, currentRow)
@@ -270,6 +615,54 @@ class SettingsTab(TabPage):
         twoInARow.Controls.Add(hintMaxAttachmentSize)
         #container.Controls.Add(hintMaxAttachmentSize, 2, currentRow)
         container.Controls.Add(twoInARow, 1, currentRow)
+    def createMinDirDepth(self, container, currentRow):
+        labelMinDirDepth = Label()
+        labelMinDirDepth.Text = "Min Dir Depth"
+        labelMinDirDepth.Dock = DockStyle.Fill
+        container.Controls.Add(labelMinDirDepth, 0, currentRow)
+        twoInARow = FlowLayoutPanel()
+        twoInARow.AutoSize = True
+        twoInARow.Dock = DockStyle.Fill
+        twoInARow.BorderStyle = BorderStyle.None #FixedSingle
+        twoInARow.Margin = Padding(0)
+        twoInARow.Padding = Padding(0)
+        twoInARow.AutoSizeMode = AutoSizeMode.GrowAndShrink
+        twoInARow.FlowDirection = FlowDirection.LeftToRight
+        self.minDirDepth = TextBox()
+        twoInARow.Controls.Add(self.minDirDepth)
+        container.Controls.Add(twoInARow, 1, currentRow)
+    def createMaxDirDepth(self, container, currentRow):
+        labelMaxDirDepth = Label()
+        labelMaxDirDepth.Text = "Max Dir Depth"
+        labelMaxDirDepth.Dock = DockStyle.Fill
+        container.Controls.Add(labelMaxDirDepth, 0, currentRow)
+        twoInARow = FlowLayoutPanel()
+        twoInARow.AutoSize = True
+        twoInARow.Dock = DockStyle.Fill
+        twoInARow.BorderStyle = BorderStyle.None #FixedSingle
+        twoInARow.Margin = Padding(0)
+        twoInARow.Padding = Padding(0)
+        twoInARow.AutoSizeMode = AutoSizeMode.GrowAndShrink
+        twoInARow.FlowDirection = FlowDirection.LeftToRight
+        self.maxDirDepth = TextBox()
+        twoInARow.Controls.Add(self.maxDirDepth)
+        container.Controls.Add(twoInARow, 1, currentRow)
+    def createMinDirSize(self, container, currentRow):
+        labelMinDirSize = Label()
+        labelMinDirSize.Text = "Min Dir Size (MB)"
+        labelMinDirSize.Dock = DockStyle.Fill
+        container.Controls.Add(labelMinDirSize, 0, currentRow)
+        twoInARow = FlowLayoutPanel()
+        twoInARow.AutoSize = True
+        twoInARow.Dock = DockStyle.Fill
+        twoInARow.BorderStyle = BorderStyle.None #FixedSingle
+        twoInARow.Margin = Padding(0)
+        twoInARow.Padding = Padding(0)
+        twoInARow.AutoSizeMode = AutoSizeMode.GrowAndShrink
+        twoInARow.FlowDirection = FlowDirection.LeftToRight
+        self.minDirSize = TextBox()
+        twoInARow.Controls.Add(self.minDirSize)
+        container.Controls.Add(twoInARow, 1, currentRow)
     def createMinChatSettings(self, container, currentRow):
         labelMinChatSize = Label()
         labelMinChatSize.Text = "Min chat size"
@@ -295,6 +688,9 @@ class SettingsTab(TabPage):
         self.defaultFolder.Text = globalSettings.workDir
         self.maxAttachmentSize.Text = str(globalSettings.maxAttachmentsSize)
         self.minChatSize.Text = str(globalSettings.minChatToBeLarge)
+        self.minDirDepth.Text = str(globalSettings.minFileDepth)
+        self.minDirSize.Text = str(globalSettings.minDirSize)
+        self.maxDirDepth.Text = str(globalSettings.maxFileDepth)
         if "video/mp4" in globalSettings.videosTypes:
             self.ch1.Checked = True
         if "video/mpeg" in globalSettings.videosTypes:
@@ -303,6 +699,7 @@ class SettingsTab(TabPage):
             self.ch3.Checked = True
         if "video/x-m4v" in globalSettings.videosTypes:
             self.ch4.Checked = True
+        globalSettings.printSettings()
     def createVideoMimeTypes(self, container, currentRow):
         checkBoxContainer = TableLayoutPanel()
         checkBoxContainer.AutoSize = True
@@ -410,6 +807,10 @@ class MainForm(Form):
         self.Text = 'Chat Cleaner'
         self.MinimumSize = Size(996, 660)
         tab = self.tabControl = TabControl()
+        imagesTab = ImagesTab()
+        tab.TabPages.Add(imagesTab)
+        videosTab = VideosTab()
+        tab.TabPages.Add(videosTab)
         chatsTab = ChatsTab()
         tab.TabPages.Add(chatsTab)
         settingsTab = SettingsTab()
@@ -419,7 +820,7 @@ class MainForm(Form):
         self.tabControl.Dock = DockStyle.Fill
         self.tabControl.Alignment = TabAlignment.Top
         self.Controls.Add(self.tabControl)
-        self.initializeToolbar()
+        #self.initializeToolbar()
         #self.initializeMenus()
     def initializeToolbar(self):
         global globalSettings
@@ -427,8 +828,8 @@ class MainForm(Form):
         self.toolBar = ToolStrip()
         self.toolBar.Dock = DockStyle.Top
         self.toolBar.GripStyle = ToolStripGripStyle.Hidden
-        self.addToolbarItem('Refresh', lambda sender, event: refreshCommand.execute(None, None), '001-refresh-arrow.png')
-        self.addToolbarItem('Report', lambda sender, event: generateReportCommand.execute(None, None), '002-report.png')
+        self.addToolbarItem('Refresh', lambda sender, event: chatRefreshCommand.execute(None, None), '001-refresh-arrow.png')
+        self.addToolbarItem('Report', lambda sender, event: chatGenerateReportCommand.execute(None, None), '002-report.png')
         self.Controls.Add(self.toolBar)
     def addToolbarItem(self, name, clickHandler, iconFile):
         button = ToolStripButton()
