@@ -187,8 +187,8 @@ class PathImageSubsystem:
                     pathAndSelectedSize[basePath] = selectedSize
         listObj = PathImageList()
         for pathItem in pathAndSizeMap:
-            size = pathAndSizeMap[pathItem]
-            selectedSize = pathAndSelectedSize[pathItem]
+            size = pathAndSizeMap[pathItem]/(1024*1024)
+            selectedSize = pathAndSelectedSize[pathItem]/(1024*1024)
             refs = pathAndRefCount[pathItem]
             pItem = PathImageItem(pathItem, refs, selectedSize, size)
             listObj.pathImageItems.append(pItem)
@@ -213,23 +213,32 @@ class PathImageSubsystem:
         selectedSize = 0
         for item in self.pathImageList.pathImageItems:
             selectedSize += item.actualSize
-        return selectedSize/(1024*1024)
+        return selectedSize
     def computeTotalSize(self):
         totalSize = 0
         for item in self.pathImageList.pathImageItems:
             totalSize += item.originalSize
-        return totalSize/(1024*1024)
+        return totalSize
     def removeAllByPath(self, imageBasePath):
-        print imageBasePath
+        for itemToRemove in imageBasePath:
+            for image in ds.DataFiles['Image']:
+                if itemToRemove in image.AbsolutePath:
+                    image.MarkForReport = False
     def predefinedRemove(self, imageBasePath):
         print imageBasePath
     def addAllByPath(self, imageBasePath):
-        print imageBasePath
+        for itemToAdd in imageBasePath:
+            for image in ds.DataFiles['Image']:
+                if itemToAdd in image.AbsolutePath:
+                    image.MarkForReport = True
     def addAll(self):
-        print 'minFileDepth: '+str(self.settings.minFileDepth)
-        print 'maxFileDepth: ' + str(self.settings.maxFileDepth)
-        print 'minFileSize: ' + str(self.settings.minDirSize)
-        print 'AddAll'
+        print 'Adding images...'
+        addCount = 0
+        for image in ds.DataFiles['Image']:
+            image.MarkForReport = True
+            addCount = addCount + 1
+        print("Images added: "+str(addCount))
+
 
 class PathVideoSubsystem:
     def computeList(self, minImageSize):
@@ -260,8 +269,8 @@ class PathVideoSubsystem:
                     pathAndSelectedSize[basePath] = selectedSize
         listObj = PathVideoList()
         for pathItem in pathAndSizeMap:
-            size = pathAndSizeMap[pathItem]
-            selectedSize = pathAndSelectedSize[pathItem]
+            size = pathAndSizeMap[pathItem]/(1024*1024)
+            selectedSize = pathAndSelectedSize[pathItem]/(1024*1024)
             refs = pathAndRefCount[pathItem]
             pItem = PathVideoItem(pathItem, refs, selectedSize, size)
             listObj.pathVideoItems.append(pItem)
@@ -286,17 +295,28 @@ class PathVideoSubsystem:
         selectedSize = 0
         for item in self.pathVideoList.pathVideoItems:
             selectedSize += item.actualSize
-        return selectedSize/(1024*1024)
+        return selectedSize
     def computeTotalSize(self):
         totalSize = 0
         for item in self.pathVideoList.pathVideoItems:
             totalSize += item.originalSize
-        return totalSize/(1024*1024)
+        return totalSize
     def removeAllByPath(self, videoBasePath):
-        print videoBasePath
+        for videoToRemove in videoBasePath:
+            for video in ds.DataFiles['Video']:
+                if videoToRemove in video.AbsolutePath:
+                    video.MarkForReport = False
     def predefinedRemove(self, videoBasePath):
         print videoBasePath
     def addAllByPath(self, videoBasePath):
-        print videoBasePath
+        for videoToAdd in videoBasePath:
+            for video in ds.DataFiles['Video']:
+                if videoToAdd in video.AbsolutePath:
+                    video.MarkForReport = True
     def addAll(self):
-        print 'AddAll'
+        print 'Adding videos...'
+        addCount = 0
+        for image in ds.DataFiles['Video']:
+            image.MarkForReport = True
+            addCount = addCount + 1
+        print("Videos added: " + str(addCount))
