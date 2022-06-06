@@ -161,14 +161,6 @@ class Subsystem:
 
 class PathImageSubsystem:
     def computeList(self, minImageSize):
-
-        #item1 = PathImageItem('c:/path1', 2, 1024, 1024*2)
-        #item2 = PathImageItem('c:/path2', 22, 1023, 1023 * 2)
-        #item3 = PathImageItem('c:/path3', 2002, 1023, 1023 * 2)
-        #listObj.pathImageItems.append(item1)
-        #listObj.pathImageItems.append(item2)
-        #listObj.pathImageItems.append(item3)
-
         print "printing images"
         pathAndSizeMap = dict()
         pathAndSelectedSize = dict()
@@ -201,7 +193,6 @@ class PathImageSubsystem:
             pItem = PathImageItem(pathItem, refs, selectedSize, size)
             listObj.pathImageItems.append(pItem)
         self.pathImageList = listObj
-
     def getBasePath(self, absPath):
         minFileDepth = self.settings.minFileDepth
         maxFileDepth = self.settings.maxFileDepth
@@ -222,12 +213,12 @@ class PathImageSubsystem:
         selectedSize = 0
         for item in self.pathImageList.pathImageItems:
             selectedSize += item.actualSize
-        return selectedSize
+        return selectedSize/(1024*1024)
     def computeTotalSize(self):
         totalSize = 0
         for item in self.pathImageList.pathImageItems:
             totalSize += item.originalSize
-        return totalSize
+        return totalSize/(1024*1024)
     def removeAllByPath(self, imageBasePath):
         print imageBasePath
     def predefinedRemove(self, imageBasePath):
@@ -242,24 +233,65 @@ class PathImageSubsystem:
 
 class PathVideoSubsystem:
     def computeList(self, minImageSize):
+        print
+        "printing videos"
+        pathAndSizeMap = dict()
+        pathAndSelectedSize = dict()
+        pathAndRefCount = dict()
+        for video in ds.DataFiles['Video']:
+            basePath = self.getBasePath(video.AbsolutePath)
+            if len(basePath) > 0:
+                if basePath not in pathAndSizeMap:
+                    pathAndSizeMap[basePath] = 0
+                if basePath not in pathAndRefCount:
+                    pathAndRefCount[basePath] = 0
+                if basePath not in pathAndSelectedSize:
+                    pathAndSelectedSize[basePath] = 0
+                size = pathAndSizeMap.get(basePath)
+                size = size + video.RawSize
+                pathAndSizeMap[basePath] = size
+                refCount = pathAndRefCount.get(basePath)
+                if video.IsAttachment:
+                    refCount = refCount + 1
+                pathAndRefCount[basePath] = refCount
+                selectedSize = pathAndSelectedSize.get(basePath)
+                if video.MarkForReport:
+                    selectedSize = selectedSize + video.RawSize
+                    pathAndSelectedSize[basePath] = selectedSize
         listObj = PathVideoList()
-        item1 = PathVideoItem('c:/path1', 2, 1024, 1024*2)
-        item2 = PathVideoItem('c:/path2', 22, 1023, 1023 * 2)
-        item3 = PathVideoItem('c:/path3', 2002, 1023, 1023 * 2)
-        listObj.pathVideoItems.append(item1)
-        listObj.pathVideoItems.append(item2)
-        listObj.pathVideoItems.append(item3)
+        for pathItem in pathAndSizeMap:
+            size = pathAndSizeMap[pathItem]
+            selectedSize = pathAndSelectedSize[pathItem]
+            refs = pathAndRefCount[pathItem]
+            pItem = PathVideoItem(pathItem, refs, selectedSize, size)
+            listObj.pathVideoItems.append(pItem)
         self.pathVideoList = listObj
+    def getBasePath(self, absPath):
+        minFileDepth = self.settings.minFileDepth
+        maxFileDepth = self.settings.maxFileDepth
+        parts = absPath.split('/')
+        if(len(parts)>minFileDepth):
+            basePath = ''
+            partPosition = 0
+            for part in parts:
+                if partPosition > maxFileDepth:
+                    return basePath
+                if len(part) > 0:
+                    basePath = basePath + '/' + part
+                    partPosition = partPosition + 1
+        else:
+            return ''
+        return ''
     def computeSelectedSize(self):
         selectedSize = 0
         for item in self.pathVideoList.pathVideoItems:
             selectedSize += item.actualSize
-        return selectedSize
+        return selectedSize/(1024*1024)
     def computeTotalSize(self):
         totalSize = 0
         for item in self.pathVideoList.pathVideoItems:
             totalSize += item.originalSize
-        return totalSize
+        return totalSize/(1024*1024)
     def removeAllByPath(self, videoBasePath):
         print videoBasePath
     def predefinedRemove(self, videoBasePath):
