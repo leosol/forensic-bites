@@ -23,7 +23,7 @@ __copyright__ = "Copyleft (C) 2021 leosol"
 __license__ = "GNU AGPLv3"
 
 #start and end with slashes!
-KNOWN_BASE_PATHS = [] #["/data/data/", "/data/media/0/", "/local media/"]
+KNOWN_BASE_PATHS = ["/data/data/", "/data/media/0/", "/local media/", "/mobile/Library/", "/AFC Service/iTunes_Control/", "/mobile/Containers/Shared/"]
 
 def support_safe_str(obj):
     if obj is None:
@@ -199,16 +199,11 @@ class PathImageSubsystem:
     def getBasePath(self, absPath):
         minFileDepth = self.settings.minFileDepth
         maxFileDepth = self.settings.maxFileDepth
-        loggbefore = "before! minFileDepth "+str(minFileDepth)+" maxFileDepth "+str(maxFileDepth)
-        print('berore: '+loggbefore)
         for knownPath in KNOWN_BASE_PATHS:
             if knownPath in absPath:
                 itemsInKnownPath = knownPath.split('/')
                 minFileDepth = minFileDepth + len(itemsInKnownPath)-2
                 maxFileDepth = maxFileDepth + len(itemsInKnownPath)-2
-                break
-        loggbefore = "after! minFileDepth " + str(minFileDepth) + " maxFileDepth " + str(maxFileDepth)
-        print('afer: '+loggbefore)
         parts = absPath.split('/')
         if(len(parts)>minFileDepth):
             basePath = ''
@@ -291,16 +286,12 @@ class PathVideoSubsystem:
     def getBasePath(self, absPath):
         minFileDepth = self.settings.minFileDepth
         maxFileDepth = self.settings.maxFileDepth
-        loggbefore = "before! minFileDepth "+str(minFileDepth)+" maxFileDepth "+str(maxFileDepth)
-        print('berore: '+loggbefore)
         for knownPath in KNOWN_BASE_PATHS:
             if knownPath in absPath:
                 itemsInKnownPath = knownPath.split('/')
                 minFileDepth = minFileDepth + len(itemsInKnownPath)-2
                 maxFileDepth = maxFileDepth + len(itemsInKnownPath)-2
                 break
-        loggbefore = "after! minFileDepth " + str(minFileDepth) + " maxFileDepth " + str(maxFileDepth)
-        print('afer: '+loggbefore)
         parts = absPath.split('/')
         if(len(parts)>minFileDepth):
             basePath = ''
