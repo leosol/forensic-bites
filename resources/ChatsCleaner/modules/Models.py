@@ -15,8 +15,8 @@ class Settings:
         self.videosTypes = ["video/mp4", "video/mpeg", "video/quicktime", "video/x-m4v"]
         self.subSystem = subSystem
         self.subSystem.settings = self
-        self.minFileDepth = 3
-        self.maxFileDepth = 4
+        self.minFileDepth = 1
+        self.maxFileDepth = 2
         self.minDirSize = 10
         self.pathImageSubsystem = pathImageSubsystem
         self.pathVideoSubsystem = pathVideoSubsystem
