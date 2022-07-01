@@ -233,7 +233,8 @@ class PathImageSubsystem:
                 if itemToRemove in image.AbsolutePath:
                     image.MarkForReport = False
     def predefinedRemove(self, imageBasePath):
-        print imageBasePath
+        print 'image predefined remove...'
+        self.removeAllByPath(imageBasePath)
     def addAllByPath(self, imageBasePath):
         for itemToAdd in imageBasePath:
             for image in ds.DataFiles['Image']:
@@ -321,7 +322,8 @@ class PathVideoSubsystem:
                 if videoToRemove in video.AbsolutePath:
                     video.MarkForReport = False
     def predefinedRemove(self, videoBasePath):
-        print videoBasePath
+        print 'videos predefined remove'
+        self.removeAllByPath(videoBasePath)
     def addAllByPath(self, videoBasePath):
         for videoToAdd in videoBasePath:
             for video in ds.DataFiles['Video']:

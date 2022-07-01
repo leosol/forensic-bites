@@ -2,7 +2,7 @@ __author__ = "leosol@gmail.com"
 __copyright__ = "Copyleft (C) 2021 leosol"
 __license__ = "GNU AGPLv3"
 
-
+KNOWN_TRASH_PATHS = ["/data/com.shazam.android/", "/data/com.zhiliaoapp.musically/", "/data/com.tencent.mm/", "/data/com.facebook.katana/app_ras_blobs/FacebookEmoji.ttf/", "/data/com.google.android.gms/files/fonts/opentype/", "/data/com.android.chrome/", "/data/com.mi.globalbrowser/", "/data/com.miui.gallery/files/photo_editor/stickers/", "/data/data/com.google.android.youtube/", "/data/com.magicv.airbrush/", "/data/com.whatsapp.w4b/files/Stickers/", "/data/com.google.android.gms/files/nearby-fast-pair/", "/data/com.whatsapp.w4b/files/downloadable/wallpaper/", "/data/com.google.android.inputmethod.latin/", "/data/com.miui.weather2/", "/data/com.miui.msa.global/files/shared/preinstall_ad_info/", "/data/com.facebook.katana/app_feedback_reactions/", "/data/com.miui.gallery/files/sky_resource/", "/data/user_de/0/com.android.deskclock/files/com.android.deskclocklib.res20190812/assets/", "/data/com.miui.gallery/files/", "/data/com.miui.gallery/app_libs/", "/data/media/0/Android/data/com.mi.android.globalminusscreen/", "/data/user_de/0/com.miui.home/databases/launcher4x6.db/", "/data/data/com.mi.android.globalminusscreen/", "/data/media/0/Android/data/com.miui.cleanmaster/", "/data/com.sec.android.app.launcher/databases/launcher.db/", "/Root/media/0/c/a/t/v1leveling/", "/data/com.google.android.googlequicksearchbox/", "/data/com.google.android.gms/files/fonts/opentype/", "/fonts/NotoColorEmoji.ttf/", "/data/com.whatsapp/files/downloadable/wallpaper/", "/priv-app/WallpaperPicker_Zero2/", "/data/com.facebook.katana/app_msqrd_effect_asset_disk_cache_fixed_sessionless/", "/data/com.google.android.youtube/", "/data/com.tranzmate/", "/data/br.com.mobicare.minhaoi/", "/media/0/c/a/t/v1leveling/", "/media/0/Android/data/com.netflix.mediaclient/", "/data/br.com.clubeextra/", "data/com.google.android.feedback/shared_prefs/", "/fonts/SamsungColorEmoji.ttf/", "/data/com.whatsapp/files/Stickers/", "/media/0/WhatsApp/Media/WhatsApp Stickers/", "/media/0/WhatsApp/.StickerThumbs/", "/data/com.sec.android.app.samsungapps/files/", "/data/com.google.android.apps.magazines/", "/data/com.google.android.feedback/", "/data/com.instagram.android/cache/ig_mq_assets_dir/", "/app/Flipboard/", "/media/0/Android/data/flipboard.boxer.app/", "/data/com.google.android.gms/cache/ads_cache/", "/data/com.whatsapp/files/Stickers/", "/data/br.com.bemobi.appsclub.tim/files/", "/data/com.whatsapp/files/Avatars/", "/data/com.google.android.gms/files/", "/data/com.android.browser/", "/data/com.sec.android.app.samsungapps/files/", "/data/com.sec.android.daemonapp/cache/image_manager_disk_cache/", "/media/0/c/a/t/v1leveling/", "/data/com.alightcreative.motion/", "/data/com.kwai.video/", "/system/recent_images/", "/data/com.whatsapp/files/Avatars/", "/media/0/Android/data/com.fotos.makeover.makeup/"]
 
 class ChatRefreshCommand:
     def execute(self, sender, event):
@@ -102,8 +102,7 @@ class PathImageAddCommand:
 class PathImagePredefinedRemoveCommand:
     def execute(self, sender, event):
         print("PathImagePredefinedRemoveCommand: execute")
-        pathsToRemove = self.formObj.getSelectedItems()
-        self.settings.pathImageSubsystem.predefinedRemove(pathsToRemove)
+        self.settings.pathImageSubsystem.predefinedRemove(KNOWN_TRASH_PATHS)
         self.settings.pathImageSubsystem.computeList(self.settings.minChatToBeLarge)
         self.formObj.updatePathImageListFromSubsystem()
     def setFormObject(self, formObj):
@@ -234,8 +233,7 @@ class PathVideoAddCommand:
 class PathVideoPredefinedRemoveCommand:
     def execute(self, sender, event):
         print("PathVideoPredefinedRemoveCommand: execute")
-        pathsToRemove = self.formObj.getSelectedItems()
-        self.settings.pathVideoSubsystem.predefinedRemove(pathsToRemove)
+        self.settings.pathVideoSubsystem.predefinedRemove(KNOWN_TRASH_PATHS)
         self.settings.pathVideoSubsystem.computeList(self.settings.minChatToBeLarge)
         self.formObj.updatePathVideoListFromSubsystem()
     def setFormObject(self, formObj):
