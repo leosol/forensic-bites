@@ -1,4 +1,15 @@
-from physical import *
+# encoding: utf-8
+
+# Adaption to UFED 757 - alberto.magno@gmail.com kraftdenker@github
+# -------------------------------------------------------------------------------------------------------------
+#from physical import *
+#from PA.Data.Models import *
+try:
+    from PA.Data.Models import *
+except ImportError:
+    from physical import *
+# -------------------------------------------------------------------------------------------------------------
+
 import SQLiteParser
 from System.Convert import IsDBNull
 from struct import *
@@ -16,7 +27,6 @@ import traceback
 
 from modules.Models import (ChatItem, ChatList, PathImageList, PathImageItem, PathVideoList, PathVideoItem)
 from random import randrange
-
 
 __author__ = "leosol@gmail.com"
 __copyright__ = "Copyleft (C) 2021 leosol"
@@ -63,16 +73,19 @@ class Subsystem:
             if chatObj.totalSize > (minChatSize-1):
                 chatList.chatItems.append(chatObj)
             self.chatList = chatList
+
     def computeSelectedSize(self):
         selectedSize = 0
         for chatItem in self.chatList.chatItems:
             selectedSize += chatItem.selectedSize
         return selectedSize
+
     def computeTotalSize(self):
         totalSize = 0
         for chatItem in self.chatList.chatItems:
             totalSize += chatItem.totalSize
         return totalSize
+
     def removeAllAttachments(self, chatIds, maxAttachmentsSize):
         attachmentsRemoved = 0
         attachmentsNotRemovedForSize = 0
@@ -90,6 +103,7 @@ class Subsystem:
                                     attachmentsNotRemovedForSize = attachmentsNotRemovedForSize+1
         print(str(attachmentsRemoved)+" were removed from the report")
         print(str(attachmentsNotRemovedForSize)+" were not touched - consider changing MaxAttachmentsSize (settings tab)")
+
     def addAllAttachments(self, chatIds):
         attachmentsAded = 0
         for chatId in chatIds:
@@ -101,6 +115,7 @@ class Subsystem:
                         for attachment in message.Attachments:
                                 attachmentsAded = attachmentsAded+1
         print("Attachments marked for report: "+str(attachmentsAded))
+
     def removeVideos(self, chatIds, mimeTypes, maxAttachmentsSize):
         attachmentsRemoved = 0
         chatsNotTouchedNotMime = 0
@@ -120,6 +135,7 @@ class Subsystem:
                                             chatsNotTouchedNotMime = chatsNotTouchedNotMime+1
         print(str(attachmentsRemoved) + " were removed from the report")
         print(str(chatsNotTouchedNotMime) + " were not touched - different mime type")
+
     def generateSinteticReport(self, file):
         temp = self.chatList.chatItems
         self.computeChatList(0)
@@ -130,6 +146,7 @@ class Subsystem:
             for chatItem in reportChatList:
                 if chatItem.chatRemovedAttachmentsCount>0:
                     myfile.write(chatItem.chatId+", "+str(chatItem.participantsCount)+", "+str(chatItem.attachmentsCount)+", "+str(chatItem.chatRemovedAttachmentsCount)+", "+str(chatItem.selectedSize)+", "+str(chatItem.unselectedSize)+", "+str(chatItem.totalSize)+"\n")
+
     def generateAnaliticReport(self, file):
         with open(file, 'wb') as myfile:
             chat_list = ds.Models[Chat]

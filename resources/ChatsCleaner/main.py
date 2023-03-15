@@ -3,7 +3,6 @@ import clr
 clr.AddReference("System.Drawing")
 clr.AddReference("System.Windows.Forms")
 
-
 __author__ = "leosol@gmail.com"
 __copyright__ = "Copyleft (C) 2021 leosol"
 __license__ = "GNU AGPLv3"
