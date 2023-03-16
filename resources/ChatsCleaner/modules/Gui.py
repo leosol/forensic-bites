@@ -31,8 +31,8 @@ from System.Windows.Forms import (Application, Form, Button, Label, DockStyle, A
                                   MenuStrip, ToolStripMenuItem, Keys)
 
 from modules.Models import (Settings)
-from modules.Subsystem import (Subsystem, PathImageSubsystem, PathVideoSubsystem)
-#from modules.UFEDSubsystem import (Subsystem, PathImageSubsystem, PathVideoSubsystem)
+#from modules.Subsystem import (Subsystem, PathImageSubsystem, PathVideoSubsystem)
+from modules.UFEDSubsystem import (Subsystem, PathImageSubsystem, PathVideoSubsystem)
 from modules.Commands import (applySettingsCommand, restoreSettingsCommand, chatRefreshCommand, chatKeepOnlyTextMessagesCommand,
                               chatAddAllAttachmentsCommand, chatRemoveVideosCommand, chatGenerateReportCommand, chatSelectAllCheckBoxesCommand,
                               imagesSelectAllCheckBoxesCommand, pathImageRemoveCommand, pathImageAddCommand, pathImagesRefreshCommand, pathImagePredefinedRemoveCommand, pathImageAddAllCommand,

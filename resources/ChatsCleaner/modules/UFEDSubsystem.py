@@ -178,6 +178,44 @@ class Subsystem:
                             myfile.write("\n")
                             attachmentIndex = attachmentIndex + 1
                             
+    def chatToMediaSync(self):
+        removed_list = []
+        added_list = []
+        chat_list = ds.Models[Chat]
+        for chat in chat_list:
+            for message in chat.Messages:
+                for attachment in message.Attachments:
+                    attachment_file_name = attachment.Filename.Value
+                    if message.MarkForReport:
+                        added_list.append(attachment_file_name)
+                    else:
+                        removed_list.append(attachment_file_name)
+        total_items = 0
+        selected_qtd = 0
+        not_selected_qtd = 0
+        for image in ds.DataFiles['Image']:
+            total_items = total_items+1
+            if image.IsAttachment:
+                curr_image_name = image.Name
+                if curr_image_name in removed_list:
+                    image.MarkForReport = False
+                    not_selected_qtd = not_selected_qtd + 1
+                if curr_image_name in added_list:
+                    image.MarkForReport = True
+                    selected_qtd = selected_qtd + 1
+        for video in ds.DataFiles['Video']:
+            total_items = total_items + 1
+            if video.IsAttachment:
+                curr_video_name = video.Name
+                if curr_video_name in removed_list:
+                    video.MarkForReport = False
+                    not_selected_qtd = not_selected_qtd + 1
+                if curr_video_name in added_list:
+                    video.MarkForReport = True
+                    selected_qtd = selected_qtd + 1
+        print(
+            "Total items " + str(total_items) + " selected " + str(selected_qtd) + " removed " + str(not_selected_qtd))
+
 
 class PathImageSubsystem:
     def computeList(self, minImageSize):
@@ -265,11 +303,38 @@ class PathImageSubsystem:
             addCount = addCount + 1
         print("Images added: "+str(addCount))
 
+    def should_mark_msg_for_report(self, message):
+        MarkForReport = message.MarkForReport
+        for attachment in message.Attachments:
+            attachment_file_name = attachment.Filename.Value
+            for image in ds.DataFiles['Image']:
+                if image.IsAttachment:
+                    curr_image_name = image.Name
+                    if attachment_file_name == curr_image_name:
+                        if not image.MarkForReport:
+                            MarkForReport = False
+                            return MarkForReport
+        return MarkForReport
+
+    def imagesToChatSync(self):
+        print("Lazy operation! Please Wait!")
+        chat_list = ds.Models[Chat]
+        total_items = 0
+        selected_qtd = 0
+        not_selected_qtd = 0
+        for chat in chat_list:
+            for message in chat.Messages:
+                message.MarkForReport = self.should_mark_msg_for_report(message)
+                total_items = total_items+1
+                if message.MarkForReport:
+                    selected_qtd = selected_qtd + 1
+                else:
+                    not_selected_qtd = not_selected_qtd + 1
+        print("Total items "+str(total_items)+" selected "+str(selected_qtd)+" removed "+str(not_selected_qtd))
 
 class PathVideoSubsystem:
     def computeList(self, minImageSize):
-        print
-        "printing videos"
+        print("printing videos")
         pathAndSizeMap = dict()
         pathAndSelectedSize = dict()
         pathAndRefCount = dict()
@@ -353,3 +418,32 @@ class PathVideoSubsystem:
             image.MarkForReport = True
             addCount = addCount + 1
         print("Videos added: " + str(addCount))
+
+    def should_mark_msg_for_report(self, message):
+        MarkForReport = message.MarkForReport
+        for attachment in message.Attachments:
+            attachment_file_name = attachment.Filename.Value
+            for video in ds.DataFiles['Video']:
+                if video.IsAttachment:
+                    curr_video_name = video.Name
+                    if attachment_file_name == curr_video_name:
+                        if not video.MarkForReport:
+                            MarkForReport = False
+                            return MarkForReport
+        return MarkForReport
+
+    def videosToChatSync(self):
+        print("Lazy operation! Please Wait!")
+        chat_list = ds.Models[Chat]
+        total_items = 0
+        selected_qtd = 0
+        not_selected_qtd = 0
+        for chat in chat_list:
+            for message in chat.Messages:
+                message.MarkForReport = self.should_mark_msg_for_report(message)
+                total_items = total_items+1
+                if message.MarkForReport:
+                    selected_qtd = selected_qtd + 1
+                else:
+                    not_selected_qtd = not_selected_qtd + 1
+        print("Total items "+str(total_items)+" selected "+str(selected_qtd)+" removed "+str(not_selected_qtd))
