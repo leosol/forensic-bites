@@ -382,6 +382,16 @@ class ChatSelectAllCheckBoxesCommand:
     def setSettings(self, settingsObj):
         self.settings = settingsObj
 
+class ChatToMediaSync:
+    def execute(self, sender, event):
+        print("ChatToMediaSync: execute")
+        self.settings.subSystem.chatToMediaSync()
+    def setFormObject(self, formObj):
+        self.formObj = formObj
+        print(formObj)
+    def setSettings(self, settingsObj):
+        self.settings = settingsObj
+
 class ImagesSelectAllCheckBoxesCommand:
     def execute(self, sender, event):
         if self.formObj is not None:
@@ -413,6 +423,16 @@ class PathImagesRefreshCommand:
     def setFormObject(self, formObj):
         self.formObj = formObj
 
+    def setSettings(self, settingsObj):
+        self.settings = settingsObj
+
+class PathImageToChatSync:
+    def execute(self, sender, event):
+        print("PathImageToChatSync: execute")
+        self.settings.pathImageSubsystem.imagesToChatSync()
+    def setFormObject(self, formObj):
+        self.formObj = formObj
+        print(formObj)
     def setSettings(self, settingsObj):
         self.settings = settingsObj
 
@@ -488,6 +508,16 @@ class VideosSelectAllCheckBoxesCommand:
     def setSettings(self, settingsObj):
         self.settings = settingsObj
 
+class PathVideoToChatSync:
+    def execute(self, sender, event):
+        print("PathVideoToChatSync: execute")
+        self.settings.pathVideoSubsystem.videosToChatSync()
+    def setFormObject(self, formObj):
+        self.formObj = formObj
+        print(formObj)
+    def setSettings(self, settingsObj):
+        self.settings = settingsObj
+
 applySettingsCommand = ApplySettingsChangedCommand()
 restoreSettingsCommand = RestoreSettingsCommand()
 chatRefreshCommand = ChatRefreshCommand()
@@ -496,6 +526,7 @@ chatAddAllAttachmentsCommand = ChatAddAllAttachmentsCommand()
 chatRemoveVideosCommand = ChatRemoveVideosCommand()
 chatGenerateReportCommand = ChatGenerateReportCommand()
 chatSelectAllCheckBoxesCommand = ChatSelectAllCheckBoxesCommand()
+chatToMediaSyncCommand = ChatToMediaSync()
 
 imagesSelectAllCheckBoxesCommand = ImagesSelectAllCheckBoxesCommand()
 pathImageRemoveCommand = PathImageRemoveCommand()
@@ -503,6 +534,7 @@ pathImageAddCommand = PathImageAddCommand()
 pathImagesRefreshCommand = PathImagesRefreshCommand()
 pathImagePredefinedRemoveCommand = PathImagePredefinedRemoveCommand()
 pathImageAddAllCommand = PathImageAddAllCommand()
+pathImageToChatSyncCommand = PathImageToChatSync()
 
 pathVideoAddAllCommand = PathVideoAddAllCommand()
 pathVideoAddCommand = PathVideoAddCommand()
@@ -510,3 +542,4 @@ pathVideoPredefinedRemoveCommand = PathVideoPredefinedRemoveCommand()
 pathVideoRemoveCommand = PathVideoRemoveCommand()
 videosSelectAllCheckBoxesCommand = VideosSelectAllCheckBoxesCommand()
 pathVideosRefreshCommand = PathVideosRefreshCommand()
+pathVideoToChatSyncCommand = PathVideoToChatSync()

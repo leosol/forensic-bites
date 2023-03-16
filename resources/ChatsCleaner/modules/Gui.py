@@ -36,7 +36,8 @@ from modules.Subsystem import (Subsystem, PathImageSubsystem, PathVideoSubsystem
 from modules.Commands import (applySettingsCommand, restoreSettingsCommand, chatRefreshCommand, chatKeepOnlyTextMessagesCommand,
                               chatAddAllAttachmentsCommand, chatRemoveVideosCommand, chatGenerateReportCommand, chatSelectAllCheckBoxesCommand,
                               imagesSelectAllCheckBoxesCommand, pathImageRemoveCommand, pathImageAddCommand, pathImagesRefreshCommand, pathImagePredefinedRemoveCommand, pathImageAddAllCommand,
-                              pathVideoAddAllCommand, pathVideoAddCommand, pathVideoPredefinedRemoveCommand, pathVideoRemoveCommand, videosSelectAllCheckBoxesCommand, pathVideosRefreshCommand)
+                              pathVideoAddAllCommand, pathVideoAddCommand, pathVideoPredefinedRemoveCommand, pathVideoRemoveCommand, videosSelectAllCheckBoxesCommand, pathVideosRefreshCommand,
+                              chatToMediaSyncCommand, pathImageToChatSyncCommand, pathVideoToChatSyncCommand)
 
 executablePath = __file__
 
@@ -63,7 +64,7 @@ class VideosTab(TabPage):
         container.Padding = Padding(10)
         container.Name = 'container name'
         container.ColumnCount = 3
-        container.RowCount = 3
+        container.RowCount = 1
         container.AutoSizeMode = AutoSizeMode.GrowAndShrink
         container.GrowStyle = TableLayoutPanelGrowStyle.AddRows
         container.Dock = DockStyle.Fill
@@ -167,6 +168,14 @@ class VideosTab(TabPage):
         pathVideoPredefinedRemoveCommand.setSettings(globalSettings)
         btnPredefinedRemoveVideosAttachments.Click += pathVideoPredefinedRemoveCommand.execute
 
+        btnSyncMediaToChats = Button()
+        btnSyncMediaToChats.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\media-to-chats.png");
+        btnSyncMediaToChats.AutoSize = True
+        btnSyncMediaToChats.Dock = DockStyle.Fill
+        pathVideoToChatSyncCommand.setFormObject(self)
+        pathVideoToChatSyncCommand.setSettings(globalSettings)
+        btnSyncMediaToChats.Click += pathVideoToChatSyncCommand.execute
+
         btnGenReport = Button()
         #btnGenReport.Text = 'Generate report'
         btnGenReport.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\report-btn.png");
@@ -182,6 +191,7 @@ class VideosTab(TabPage):
         controlsContainer.Controls.Add(btnAddAllAttachments)
         controlsContainer.Controls.Add(btnRemoveVideosAttachments)
         controlsContainer.Controls.Add(btnPredefinedRemoveVideosAttachments)
+        controlsContainer.Controls.Add(btnSyncMediaToChats)
         controlsContainer.Controls.Add(btnGenReport)
 
         labelSelectedSizeVsTotalSize = Label()
@@ -232,7 +242,7 @@ class ImagesTab(TabPage):
         container.Padding = Padding(10)
         container.Name = 'container name'
         container.ColumnCount = 3
-        container.RowCount = 3
+        container.RowCount = 1
         container.AutoSizeMode = AutoSizeMode.GrowAndShrink
         container.GrowStyle = TableLayoutPanelGrowStyle.AddRows
         container.Dock = DockStyle.Fill
@@ -335,6 +345,14 @@ class ImagesTab(TabPage):
         pathImagePredefinedRemoveCommand.setSettings(globalSettings)
         btnPredefinedRemove.Click += pathImagePredefinedRemoveCommand.execute
 
+        btnSyncMediaToChats = Button()
+        btnSyncMediaToChats.Image = Image.FromFile(globalSettings.defaultWorkDir + "\\icons\\media-to-chats.png");
+        btnSyncMediaToChats.AutoSize = True
+        btnSyncMediaToChats.Dock = DockStyle.Fill
+        pathImageToChatSyncCommand.setFormObject(self)
+        pathImageToChatSyncCommand.setSettings(globalSettings)
+        btnSyncMediaToChats.Click += pathImageToChatSyncCommand.execute
+
         btnGenReport = Button()
         #btnGenReport.Text = 'Generate report'
         btnGenReport.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\report-btn.png");
@@ -350,6 +368,7 @@ class ImagesTab(TabPage):
         controlsContainer.Controls.Add(btnAddAllAttachments)
         controlsContainer.Controls.Add(btnRemoveVideosAttachments)
         controlsContainer.Controls.Add(btnPredefinedRemove)
+        controlsContainer.Controls.Add(btnSyncMediaToChats)
         controlsContainer.Controls.Add(btnGenReport)
 
         labelSelectedSizeVsTotalSize = Label()
@@ -401,7 +420,7 @@ class ChatsTab(TabPage):
         container.Padding = Padding(10)
         container.Name = 'container name'
         container.ColumnCount = 3
-        container.RowCount = 3
+        container.RowCount = 1
         container.AutoSizeMode = AutoSizeMode.GrowAndShrink
         container.GrowStyle = TableLayoutPanelGrowStyle.AddRows
         container.Dock = DockStyle.Fill
@@ -502,6 +521,14 @@ class ChatsTab(TabPage):
         chatRemoveVideosCommand.setSettings(globalSettings)
         btnRemoveVideosAttachments.Click += chatRemoveVideosCommand.execute
 
+        btnSyncChatsToMedia = Button()
+        btnSyncChatsToMedia.Image = Image.FromFile(globalSettings.defaultWorkDir + "\\icons\\chats-to-media.png");
+        btnSyncChatsToMedia.AutoSize = True
+        btnSyncChatsToMedia.Dock = DockStyle.Fill
+        chatToMediaSyncCommand.setFormObject(self)
+        chatToMediaSyncCommand.setSettings(globalSettings)
+        btnSyncChatsToMedia.Click += chatToMediaSyncCommand.execute
+
         btnGenReport = Button()
         #btnGenReport.Text = 'Generate report'
         btnGenReport.Image = Image.FromFile(globalSettings.defaultWorkDir+"\\icons\\report-btn.png");
@@ -516,6 +543,7 @@ class ChatsTab(TabPage):
         controlsContainer.Controls.Add(btnRemoveAttachments)
         controlsContainer.Controls.Add(btnAddAllAttachments)
         controlsContainer.Controls.Add(btnRemoveVideosAttachments)
+        controlsContainer.Controls.Add(btnSyncChatsToMedia)
         controlsContainer.Controls.Add(btnGenReport)
 
         labelSelectedSizeVsTotalSize = Label()
@@ -580,7 +608,7 @@ class SettingsTab(TabPage):
         container.Padding = Padding(10)
         container.Name = 'container name'
         container.ColumnCount = 3
-        container.RowCount = 3
+        container.RowCount = 1
         container.AutoSizeMode = AutoSizeMode.GrowAndShrink
         container.GrowStyle = TableLayoutPanelGrowStyle.AddRows
         container.Dock = DockStyle.Fill
@@ -806,7 +834,7 @@ class MainForm(Form):
         globalSettings.defaultWorkDir = workDir
     def initializeTabs(self):
         self.Text = 'Chat Cleaner'
-        self.MinimumSize = Size(996, 660)
+        self.MinimumSize = Size(1024, 960)
         tab = self.tabControl = TabControl()
         imagesTab = ImagesTab()
         tab.TabPages.Add(imagesTab)

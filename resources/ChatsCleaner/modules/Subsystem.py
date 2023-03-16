@@ -51,6 +51,8 @@ class Subsystem:
         mylist = ['value 1', 'value 2', 'value 3']
         with open(file, 'wb') as myfile:
             myfile.write(str(mylist))
+    def chatToMediaSync(self):
+        print("chatToMediaSync")
 
 
 class PathImageSubsystem:
@@ -84,6 +86,9 @@ class PathImageSubsystem:
         print 'maxFileDepth: ' + str(self.settings.maxFileDepth)
         print 'minFileSize: ' + str(self.settings.minDirSize)
         print 'AddAll'
+    def imagesToChatSync(self):
+        print 'imagesToChatSync'
+
 
 class PathVideoSubsystem:
     def computeList(self, minImageSize):
@@ -113,3 +118,5 @@ class PathVideoSubsystem:
         print videoBasePath
     def addAll(self):
         print 'AddAll'
+    def videosToChatSync(self):
+        print 'videosToChatSync'
